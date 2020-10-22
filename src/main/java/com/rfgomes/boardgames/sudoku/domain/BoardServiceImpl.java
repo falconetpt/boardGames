@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 @Service
 public class BoardServiceImpl implements BoardService {
     private BoardSolver boardSolver;
-    private Random random = new Random(9);
 
     public BoardServiceImpl(final BoardSolver boardSolver) {
         this.boardSolver = boardSolver;
@@ -38,7 +37,10 @@ public class BoardServiceImpl implements BoardService {
 
         List<Point> pointList = IntStream.range( 0,  length ).boxed()
                 .flatMap( x -> IntStream.range( 0, length ).mapToObj( y -> new Point( x, y ) ) )
-                .sorted((a, b) -> random.nextInt(3) - 1)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+                    Collections.shuffle(collected);
+                    return collected.stream();
+                }))
                 .limit( (int) (length * length / 1.2) )
                 .collect( Collectors.toList());
 
